@@ -20,16 +20,14 @@ app.get("/", (req, res) => {
 app.post("/send", async (req, res) => {
   const { name, email, company, phone, service, message } = req.body;
 
-  const transporter = nodemailer.createTransport({
-    host: "ssl0.ovh.net",
-    port: 465,
-    secure: true,
-  
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+ const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
 
   try {
     await transporter.sendMail({
