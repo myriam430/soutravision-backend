@@ -7,13 +7,14 @@
     "dev": "nodemon index.js"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "@tailwindcss/cli": "^4.1.18",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
     "express": "^5.2.1",
     "nodemailer": "^7.0.12",
     "nodemon": "^3.1.11",
     "tailwindcss": "^4.1.18"
   }
 }
-
