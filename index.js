@@ -11,15 +11,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Route GET pour vérifier que le serveur fonctionne
-app.get("/", (req, res) => {
-  res.send("API en ligne");
-});
-
 // Route POST pour envoyer l'email
 app.post("/send", async (req, res) => {
   const { name, email, company, phone, service, message } = req.body;
 
+<<<<<<< HEAD
  const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -28,6 +24,18 @@ app.post("/send", async (req, res) => {
   },
 });
 
+=======
+  const transporter = nodemailer.createTransport({
+    host: "ssl0.ovh.net",
+    port: 465,
+    secure: true,
+  
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+>>>>>>> f6e03f1 (Initial commit2  backend)
 
   try {
     await transporter.sendMail({
