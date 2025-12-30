@@ -16,10 +16,11 @@ app.post("/send", async (req, res) => {
   const { name, email, message } = req.body;
 
   const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail({
-    sender: {
-      email: process.env.BREVO_FROM,
-      name: "Soutravision",
-    },
+   sender: {
+  email: "infos@soutravision.com", // email vérifié Brevo
+  name: "Soutravision",
+},
+
     to: [{ email: process.env.BREVO_FROM }],
     replyTo: {
       email: email,
