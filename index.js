@@ -34,12 +34,12 @@ app.post("/send", async (req, res) => {
 
   const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail({
     sender: {
-      email: "notification@brevo.com", // Email Brevo par défaut (déjà vérifié)
+      email: "infos@soutravision.com", // Email Brevo par défaut (déjà vérifié)
       name: "Soutravision",
     },
     to: [
       {
-        email: "infos@soutra.com", // ← ICI : L'email qui REÇOIT les messages
+        email: "adadohmyriam@gmail.com", // ← ICI : L'email qui REÇOIT les messages
         name: "Service Client Soutravision",
       },
     ],
