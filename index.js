@@ -37,7 +37,7 @@ app.post("/send", async (req, res) => {
   // CRÉATION SIMPLIFIÉE et CORRECTE de l'email
   const sendSmtpEmail = {
     sender: {  // FORMAT EXACT REQUIS PAR BREVO
-      email: "infos@soutra.com",  // CHANGE ÇA SI NÉCESSAIRE
+      email: "infos@soutravision.com",  // CHANGE ÇA SI NÉCESSAIRE
       name: "Soutravision"
     },
     to: [{
