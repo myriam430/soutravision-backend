@@ -1,4 +1,4 @@
-﻿// index.js
+// index.js - VERSION CORRIGÉE
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
@@ -14,95 +14,94 @@ if (!process.env.BREVO_API_KEY) {
   process.exit(1);
 }
 
+// Configuration Brevo CORRECTE
 const client = SibApiV3Sdk.ApiClient.instance;
-client.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
+const apiKey = client.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
 
 const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
 app.post("/send", async (req, res) => {
   const { name, email, message } = req.body;
 
-  // Vérifie que le front envoie bien ces données
   if (!name || !email || !message) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Champs manquants" });
+    return res.status(400).json({ 
+      success: false, 
+      message: "Tous les champs sont requis" 
+    });
   }
 
   console.log("📧 Tentative d'envoi d'email...");
   console.log("👤 Client:", name, "(", email, ")");
 
-  const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail({
-    sender: {
-      email: "infos@soutravision.com", // Email Brevo par défaut (déjà vérifié)
-      name: "Soutravision",
+  // CRÉATION SIMPLIFIÉE et CORRECTE de l'email
+  const sendSmtpEmail = {
+    sender: {  // FORMAT EXACT REQUIS PAR BREVO
+      email: "contact@soutra.com",  // CHANGE ÇA SI NÉCESSAIRE
+      name: "Soutravision"
     },
-    to: [
-      {
-        email: "adadohmyriam@gmail.com", // ← ICI : L'email qui REÇOIT les messages
-        name: "Service Client Soutravision",
-      },
-    ],
+    to: [{
+      email: "infos@soutra.com",
+      name: "Service Client"
+    }],
     replyTo: {
-      email: email, // Email du client
-      name: name,
+      email: email,
+      name: name
     },
-    subject: "📧 Nouveau message depuis le site Soutravision",
+    subject: "Nouveau message depuis le site",
     htmlContent: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #f8f9fa; padding: 20px; text-align: center; border-bottom: 3px solid #007bff;">
-          <h1 style="color: #333; margin: 0;">SOUTRAVISION</h1>
-          <p style="color: #666; margin: 5px 0 0 0;">Nouveau message de contact</p>
-        </div>
-        
-        <div style="padding: 20px;">
-          <div style="background: #e8f4fd; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-            <h3 style="margin-top: 0; color: #2c3e50;">👤 Informations du contact</h3>
-            <p><strong>Nom :</strong> ${name}</p>
-            <p><strong>Email :</strong> <a href="mailto:${email}">${email}</a></p>
-            <p><strong>Date :</strong> ${new Date().toLocaleString("fr-FR")}</p>
-          </div>
-          
-          <div style="background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
-            <h3 style="color: #2c3e50;">💬 Message :</h3>
-            <p style="white-space: pre-line; line-height: 1.6;">${message}</p>
-          </div>
-          
-          <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 5px; font-size: 14px; color: #666;">
-            <p><strong>⚠️ Pour répondre :</strong> Cliquez sur "Répondre" dans votre client email.</p>
-            <p>Le client recevra directement votre réponse à l'adresse : <strong>${email}</strong></p>
-          </div>
-        </div>
-        
-        <div style="text-align: center; padding: 20px; color: #999; font-size: 12px; border-top: 1px solid #eee;">
-          <p>Cet email a été envoyé automatiquement depuis le formulaire de contact du site Soutravision.</p>
-          <p>© ${new Date().getFullYear()} Soutravision - Tous droits réservés</p>
-        </div>
-      </div>
-    `,
-  });
+      <h3>Nouveau message</h3>
+      <p><strong>Nom :</strong> ${name}</p>
+      <p><strong>Email :</strong> ${email}</p>
+      <p><strong>Message :</strong> ${message}</p>
+    `
+  };
+
+  console.log("🔍 Objet email à envoyer :");
+  console.log(JSON.stringify(sendSmtpEmail, null, 2));
 
   try {
+    console.log("🔄 Envoi en cours vers Brevo...");
     const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
-    console.log("✅ EMAIL ENVOYÉ AVEC SUCCÈS !");
-    console.log("📨 Destinataire : infos@soutra.com");
-    console.log("📊 Réponse Brevo :", response);
-
-    res.json({
-      success: true,
-      message: "Votre message a été envoyé à infos@soutra.com",
+    console.log("✅ SUCCÈS ! Email envoyé.");
+    console.log("📊 Réponse:", response);
+    
+    res.json({ 
+      success: true, 
+      message: "Message envoyé avec succès" 
     });
   } catch (error) {
-    console.error("❌ ERREUR BREVO :");
-    console.error("Code erreur:", error?.response?.body?.code);
-    console.error("Message:", error?.response?.body?.message);
-    console.error("Détails:", error?.response?.body || error.message);
-
-    res.status(500).json({
-      success: false,
-      message: "Désolé, une erreur est survenue lors de l'envoi",
-      error: error?.response?.body?.message || "Erreur technique",
-    });
+    console.error("❌ ERREUR COMPLÈTE:");
+    console.error("Status:", error.status);
+    console.error("Body:", error.body);
+    console.error("Text:", error.text);
+    console.error("Headers:", error.headers);
+    
+    // SOLUTION DE SECOURS - Essaye un sender différent
+    console.log("\n🔄 Essayons avec un sender alternatif...");
+    
+    // Essaie avec un sender Brevo par défaut
+    sendSmtpEmail.sender = {
+      email: "notification@brevo.com",
+      name: "Soutravision"
+    };
+    
+    console.log("Nouveau sender:", sendSmtpEmail.sender);
+    
+    try {
+      const retryResponse = await apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log("✅ SUCCÈS avec sender alternatif !");
+      res.json({ 
+        success: true, 
+        message: "Message envoyé avec succès (sender alternatif)" 
+      });
+    } catch (retryError) {
+      console.error("❌ Échec même avec sender alternatif");
+      res.status(500).json({ 
+        success: false, 
+        message: "Erreur serveur. Veuillez nous contacter directement." 
+      });
+    }
   }
 });
 
