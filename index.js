@@ -78,7 +78,7 @@ app.post("/send", async (req, res) => {
       </div>
     `,
     textContent: `
-Nouveau message de contact
+Nouveau message 
 -------------------------
 Nom: ${name}
 Email: ${email}
