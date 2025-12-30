@@ -1,4 +1,4 @@
-// index.js - VERSION CORRIGÉE
+// index.js - VERSION CORRIGÉE AVEC TOUS LES CHAMPS
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
@@ -22,22 +22,26 @@ apiKey.apiKey = process.env.BREVO_API_KEY;
 const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
 app.post("/send", async (req, res) => {
-  const { name, email, message } = req.body;
+  // CORRECTION ICI : AJOUT DES NOUVEAUX CHAMPS
+  const { name, email, company, phone, service, message } = req.body;
 
   if (!name || !email || !message) {
     return res.status(400).json({ 
       success: false, 
-      message: "Tous les champs sont requis" 
+      message: "Nom, email et message sont requis" 
     });
   }
 
   console.log("📧 Tentative d'envoi d'email...");
   console.log("👤 Client:", name, "(", email, ")");
+  console.log("🏢 Entreprise:", company || "Non renseigné");
+  console.log("📞 Téléphone:", phone || "Non renseigné");
+  console.log("🎯 Service:", service || "Non spécifié");
 
   // CRÉATION SIMPLIFIÉE et CORRECTE de l'email
   const sendSmtpEmail = {
     sender: {  // FORMAT EXACT REQUIS PAR BREVO
-      email: "infos@soutravision.com",  // CHANGE ÇA SI NÉCESSAIRE
+      email: "infos@soutravision.com",  // Email vérifié de Soutravision
       name: "Soutravision"
     },
     to: [{
@@ -48,12 +52,43 @@ app.post("/send", async (req, res) => {
       email: email,
       name: name
     },
-    subject: "Nouveau message depuis le site",
+    subject: `Nouveau message: ${service || "Demande générale"} - ${company || name}`,
     htmlContent: `
-      <h3>Nouveau message</h3>
-      <p><strong>Nom :</strong> ${name}</p>
-      <p><strong>Email :</strong> ${email}</p>
-      <p><strong>Message :</strong> ${message}</p>
+      <div style="font-family: Arial, sans-serif; padding: 20px;">
+        <h2 style="color: #2c3e50;">📧 Nouveau message de contact</h2>
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+          <h3 style="margin-top: 0;">👤 Informations du contact</h3>
+          <p><strong>Nom :</strong> ${name}</p>
+          <p><strong>Email :</strong> <a href="mailto:${email}">${email}</a></p>
+          <p><strong>Téléphone :</strong> ${phone || "Non renseigné"}</p>
+          <p><strong>Entreprise :</strong> ${company || "Non renseigné"}</p>
+          <p><strong>Service intéressé :</strong> ${service || "Non spécifié"}</p>
+          <p><strong>Date :</strong> ${new Date().toLocaleString('fr-FR')}</p>
+        </div>
+        
+        <div style="background: #e8f4fd; padding: 15px; border-radius: 5px;">
+          <h3>💬 Message :</h3>
+          <p style="white-space: pre-line;">${message}</p>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 5px; font-size: 12px; color: #666;">
+          <p>Cet email a été envoyé automatiquement depuis le formulaire de contact du site Soutravision.</p>
+        </div>
+      </div>
+    `,
+    textContent: `
+Nouveau message de contact
+-------------------------
+Nom: ${name}
+Email: ${email}
+Téléphone: ${phone || "Non renseigné"}
+Entreprise: ${company || "Non renseigné"}
+Service intéressé: ${service || "Non spécifié"}
+Date: ${new Date().toLocaleString('fr-FR')}
+
+Message:
+${message}
     `
   };
 
