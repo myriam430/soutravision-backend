@@ -55,7 +55,7 @@ app.post("/send", async (req, res) => {
     subject: `Nouveau message: ${service || "Demande générale"} - ${company || name}`,
     htmlContent: `
       <div style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2 style="color: #2c3e50;">📧 Nouveau message de contact</h2>
+        <h2 style="color: #2c3e50;">📧 Nouveau message</h2>
         
         <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
           <h3 style="margin-top: 0;">👤 Informations du contact</h3>
